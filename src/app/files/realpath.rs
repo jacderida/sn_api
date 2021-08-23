@@ -13,7 +13,7 @@ use super::{
 };
 use crate::{Error, Result};
 
-pub(crate) trait RealPath {
+pub trait RealPath {
     fn realpath(&self, fpath: &str) -> Result<String>;
 }
 
