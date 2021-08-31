@@ -114,6 +114,8 @@ impl Safe {
 
     /// # Create a NrsMapContainer.
     ///
+    /// The returned XorUrl contains the first version hash
+    ///
     /// ## Example
     ///
     /// ```rust,no_run
@@ -172,11 +174,15 @@ impl Safe {
             name.as_bytes().to_owned(),
             nrs_map_xorurl.as_bytes().to_owned(),
         );
-        let _ = self
+        let entry_hash = &self
             .multimap_insert(&xorurl, entry, BTreeSet::new())
             .await?;
 
-        Ok((xorurl, processed_entries, nrs_map))
+        let mut tmp_url = Url::from_xorurl(&xorurl)?;
+        tmp_url.set_content_version(Some(VersionHash::from(entry_hash)));
+        let new_xor_url = format!("{}", &tmp_url);
+
+        Ok((new_xor_url, processed_entries, nrs_map))
     }
 
     pub async fn nrs_map_container_remove(
